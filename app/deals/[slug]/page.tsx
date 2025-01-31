@@ -12,13 +12,37 @@ import { Timer, Percent, Tag, Gift, TrendingUp, ShoppingCart, CreditCard } from 
 const products = Array.from({ length: 6 }, (_, i) => ({
   id: i + 1,
   name: `Product ${i + 1}`,
-  price: (Math.random() * 200 + 50).toFixed(2),
+  price: Number((Math.random() * 200 + 50).toFixed(2)),
   discount: Math.floor(Math.random() * 30) + 10, // 10-30% discount
   image: `https://source.unsplash.com/random/400x400?product=${i + 1}`,
 }))
 
-// Deal configuration based on slug
-const dealConfig = {
+type DealConfig = {
+  "flash-sale": {
+    title: string
+    icon: any
+    description: string
+    hasCountdown: boolean
+    endTime: number
+  }
+  "exclusive-offers": {
+    title: string
+    icon: any
+    description: string
+  }
+  bundles: {
+    title: string
+    icon: any
+    description: string
+  }
+  trending: {
+    title: string
+    icon: any
+    description: string
+  }
+}
+
+const dealConfig: DealConfig = {
   "flash-sale": {
     title: "🔥 Limited-Time Flash Sale!",
     icon: Timer,
@@ -71,7 +95,7 @@ function useCountdown(targetTime: number) {
 export default function DealPage({ params }: { params: { slug: string } }) {
   const { slug } = params
   const deal = dealConfig[slug as keyof typeof dealConfig]
-  const countdown = deal?.hasCountdown ? useCountdown(deal.endTime!) : null
+  const countdown = deal && 'hasCountdown' in deal ? useCountdown(deal.endTime) : null
 
   if (!deal) {
     return (
@@ -92,7 +116,7 @@ export default function DealPage({ params }: { params: { slug: string } }) {
       </motion.div>
 
       {/* Countdown Timer for Flash Sale */}
-      {deal.hasCountdown && countdown! > 0 && (
+      {deal && 'hasCountdown' in deal && deal.hasCountdown && countdown! > 0 && (
         <motion.div className="mb-6 flex justify-center items-center gap-2 p-3 bg-red-100 dark:bg-red-900 rounded-lg">
           <Timer className="h-5 w-5 text-red-600 dark:text-red-400" />
           <span className="text-lg font-semibold text-red-600 dark:text-red-400">

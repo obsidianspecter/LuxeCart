@@ -153,6 +153,8 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                             category: category.name,
                             price: product.price,
                             image: product.image,
+                            discount: 0,
+                            quantity: 1
                           })
                         }
                         whileHover={{ scale: 1.05 }}

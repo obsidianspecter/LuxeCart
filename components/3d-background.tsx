@@ -1,13 +1,20 @@
 "use client"
 
 import { Canvas, useFrame } from "@react-three/fiber"
-import { useRef } from "react"
-import { Mesh } from "three"
+import { useRef, forwardRef } from "react"
+import * as THREE from "three"
 import { motion } from "framer-motion-3d"
 import { Environment, Float } from "@react-three/drei"
 
+// ✅ Create a Framer Motion-compatible mesh wrapper with forwarded ref
+const MotionMesh = motion(
+  forwardRef<THREE.Mesh, JSX.IntrinsicElements["mesh"]>((props, ref) => (
+    <mesh ref={ref} {...props} />
+  ))
+)
+
 function FloatingShapes() {
-  const meshRef = useRef<Mesh>(null)
+  const meshRef = useRef<THREE.Mesh>(null)
 
   useFrame((state) => {
     if (meshRef.current) {
@@ -23,13 +30,14 @@ function FloatingShapes() {
       floatIntensity={2}
       floatingRange={[-0.1, 0.1]}
     >
-      <motion.mesh
+      {/* ✅ Use MotionMesh instead of motion3d.mesh */}
+      <MotionMesh
         ref={meshRef}
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{
           duration: 1.5,
-          ease: [0.76, 0, 0.24, 1]
+          ease: [0.76, 0, 0.24, 1],
         }}
       >
         <torusKnotGeometry args={[1, 0.3, 128, 16]} />
@@ -38,7 +46,7 @@ function FloatingShapes() {
           roughness={0.3}
           metalness={0.8}
         />
-      </motion.mesh>
+      </MotionMesh>
     </Float>
   )
 }
